@@ -17,7 +17,7 @@ public class AccountTransaction implements Transaction {
     private String description;
     private Date date;
 
-
+    private String group;
     /**
      * Construct a card-based transaction
      */
@@ -25,6 +25,7 @@ public class AccountTransaction implements Transaction {
         this.amount = 0;
         this.description = null;
         this.date = null;
+        this.group = null;
     }
 
     public void setAmount(int amount) {
@@ -37,6 +38,10 @@ public class AccountTransaction implements Transaction {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     @Override
@@ -62,5 +67,10 @@ public class AccountTransaction implements Transaction {
                 CurrencyFormat.format(amount),
                 description
         );
+    }
+
+    @Override
+    public String getGroup() {
+        return this.group;
     }
 }

@@ -1,6 +1,7 @@
 package me.amccarthy.finance.io;
 
 import me.amccarthy.finance.AccountTransaction;
+import me.amccarthy.finance.DescriptionTrimmer;
 import me.amccarthy.finance.Transaction;
 import me.amccarthy.finance.currency.CurrencyFormat;
 import me.amccarthy.finance.currency.CurrencyFormatException;
@@ -13,10 +14,9 @@ import java.io.Reader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
+// TODO make this an iterator to save performance hardcore
 /**
  * Package: me.amccarthy.finance.io
  * File: TransactionParser.java
@@ -79,6 +79,8 @@ public class TransactionParser {
         AccountTransaction newTransaction = new AccountTransaction();
         newTransaction.setDate(date);
         newTransaction.setDescription(description);
+        DescriptionTrimmer dt = new DescriptionTrimmer(description);
+        newTransaction.setGroup(dt.getGroupCriteria());
         newTransaction.setAmount(amount);
 
         return newTransaction;
@@ -89,16 +91,21 @@ public class TransactionParser {
      * @return
      *      A collection of Transaction objects parsed from the CSV file.
      */
-    public Collection<Transaction> parse() {
-        Collection<Transaction> transactions = new ArrayList<>();
+    public Map<String, Collection<Transaction>> parse() {
+        Map<String, Collection<Transaction>> map = new HashMap<>();
         for (CSVRecord record : parser) {
             Transaction transaction = parseRecord(record);
             if (transaction == null) {
                 continue; // means it did not parse correctly.
             }
+            Collection<Transaction> transactions = map.get(transaction.getGroup());
+            if (transactions == null) {
+                transactions = new ArrayList<>();
+                map.put(transaction.getGroup(), transactions);
+            }
             transactions.add(transaction);
         }
-        return transactions;
+        return map;
     }
 
     /**
