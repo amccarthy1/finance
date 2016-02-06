@@ -60,20 +60,19 @@ public class TransactionParser {
         if (record.size() != NUM_FIELDS) {
             return null;
         }
-        String dateString;      // raw date string
-        String description;     // raw description
-        String value;           // raw dollar amount
-
         Date date;              // parsed date
         int amount;             // parsed amount
 
+        String dateString = record.get(DATE);
+        String description = record.get(DESCRIPTION);
+        String value = record.get(AMOUNT);
         try {
-            dateString = record.get(DATE);
-            description = record.get(DESCRIPTION);
-            value = record.get(AMOUNT);
             date = CSV_DATE_FORMAT.parse(dateString);
             amount = CurrencyFormat.parse(value);
         } catch (ParseException|CurrencyFormatException e) {
+            System.err.println("Failed to parse record: ");
+            System.err.println(dateString + "," + description + "," + value);
+            System.err.println("Ignoring Record.");
             return null;
         }
         // construct a new transaction now that we have all the values.
