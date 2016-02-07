@@ -1,5 +1,8 @@
 package me.amccarthy.finance;
 
+import me.amccarthy.finance.places.Places;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -11,8 +14,6 @@ import java.util.Map;
  * @author Adam McCarthy <amccarthy@mail.rit.edu>
  */
 public class GroupFinder {
-    // maps shortened descriptions to their 'canonical' groups
-    private Map<String, String> descriptionGroupMap;
 
     public static String getGroup(String description) {
         DescriptionTrimmer trimmer = new DescriptionTrimmer(description);
@@ -20,9 +21,6 @@ public class GroupFinder {
         if (trimmer.isCanonical()) {
             return group;
         }
-        else {
-            // TODO do a google places API query
-            return group;
-        }
+        return Places.getTypeOf(group);
     }
 }

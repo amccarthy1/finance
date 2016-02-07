@@ -24,9 +24,9 @@ public class Main {
                     .mapToInt(Transaction::getAmount)
                     .sum();
             System.out.printf(" (%s):\n", CurrencyFormat.format(sum));
-//            transactions.stream()
-//                    .map(transaction -> "    " + transaction.toString())
-//                    .forEach(System.out::println);
+            transactions.stream()
+                    .map(transaction -> "    " + transaction.toString())
+                    .forEach(System.out::println);
         });
         // now run our suite of rule checks against the transactions provided.
         System.out.println("=========================");
