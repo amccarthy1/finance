@@ -29,7 +29,12 @@ public class Main {
 //                    .forEach(System.out::println);
         });
         // now run our suite of rule checks against the transactions provided.
-        System.out.println("Checking for savings tips");
+        System.out.println("=========================");
+        System.out.println("Finished Reading CSV file");
+        System.out.println("=========================");
+        System.out.println();
+        System.out.println("Checking for savings tips...");
+        System.out.println("=========================");
         transactionMap.forEach(RuleChecker::check);
 
     }
