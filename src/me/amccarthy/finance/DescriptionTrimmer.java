@@ -31,15 +31,15 @@ public class DescriptionTrimmer {
         // check for common groups, like rent, gas, ATMs, etc.
         // All of these will be grouped together, and doing this will save some execution time
         // TODO specify using a configuration file for cleaner code.
-        String[] parts = description.split("\\s+");
+        String[] parts = description.split("\\s+|:");
         for (String word : parts) {
-            String lower = word.toLowerCase();
+            String lower = word.toLowerCase().replaceAll("[^a-z]", " ").trim();
             switch (lower) {
                 case "atm":
                     group = "ATM";
                     return true;
                 case "fee":
-                    group = "Fee";
+                    group = "Fees";
                     return true;
                 case "gas":
                 case "exxon":
@@ -72,7 +72,6 @@ public class DescriptionTrimmer {
     }
 
     private void secondPass() {
-        List<String> extraneousBits = new ArrayList<>();
         List<String> usefulBits = new ArrayList<>();
 
         boolean usefulEnded = false;
@@ -84,17 +83,14 @@ public class DescriptionTrimmer {
                 continue;
             }
             if (
-                    usefulEnded ||
-                            lower.matches(ID_NUM_PATTERN) ||
-                            lower.matches(ID_NUM_REDACT_PATTERN) ||
-                            lower.matches(REDUNDANT_WORDS) ||
-                            lower.matches(PHONE_NUMBER) ||
-                            lower.matches(PHONE_AREA_CODE) ||
-                            lower.matches(KEY_VALUE_PAIR)
-                    ) {
-                usefulEnded = true;
-                extraneousBits.add(s);
-                continue;
+                lower.matches(ID_NUM_PATTERN) ||
+                lower.matches(ID_NUM_REDACT_PATTERN) ||
+                lower.matches(REDUNDANT_WORDS) ||
+                lower.matches(PHONE_NUMBER) ||
+                lower.matches(PHONE_AREA_CODE) ||
+                lower.matches(KEY_VALUE_PAIR)
+            ) {
+                break;
             }
             usefulBits.add(s);
         }

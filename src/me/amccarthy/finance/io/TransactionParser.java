@@ -1,8 +1,6 @@
 package me.amccarthy.finance.io;
 
-import me.amccarthy.finance.AccountTransaction;
-import me.amccarthy.finance.DescriptionTrimmer;
-import me.amccarthy.finance.Transaction;
+import me.amccarthy.finance.*;
 import me.amccarthy.finance.currency.CurrencyFormat;
 import me.amccarthy.finance.currency.CurrencyFormatException;
 import org.apache.commons.csv.CSVFormat;
@@ -91,20 +89,22 @@ public class TransactionParser {
      * @return
      *      A collection of Transaction objects parsed from the CSV file.
      */
-    public Map<String, Collection<Transaction>> parse() {
-        Map<String, Collection<Transaction>> map = new HashMap<>();
+    public Map<String, TransactionSet> parse() {
+        System.out.println("Parsing CSV File...");
+        Map<String, TransactionSet> map = new TreeMap<>(GroupSorter::compare);
         for (CSVRecord record : parser) {
             Transaction transaction = parseRecord(record);
             if (transaction == null) {
                 continue; // means it did not parse correctly.
             }
-            Collection<Transaction> transactions = map.get(transaction.getGroup());
+            TransactionSet transactions = map.get(transaction.getGroup());
             if (transactions == null) {
-                transactions = new ArrayList<>();
+                transactions = new TransactionSet();
                 map.put(transaction.getGroup(), transactions);
             }
             transactions.add(transaction);
         }
+
         return map;
     }
 
