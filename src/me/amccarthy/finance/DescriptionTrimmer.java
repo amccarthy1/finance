@@ -6,6 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Package: me.amccarthy.finance
+ * File: DescriptionTrimmer.java
+ *
+ * Strips out useless information like transaction IDs and contact information
+ * from a description string, so that transactions at the same location will
+ * be put in the same group. (This reduces the number of API queries we'd need
+ * to completely categorize things).
+ *
  * @author Adam McCarthy <amccarthy@mail.rit.edu>
  */
 public class DescriptionTrimmer {
@@ -19,10 +27,12 @@ public class DescriptionTrimmer {
     private static final String KEY_VALUE_PAIR = "[a-z]+:.+"; // very frequently redundant
     private String description;
     private String group;
+    private boolean canonical;
 
 
     public DescriptionTrimmer(String description) {
         this.description = description;
+        this.canonical = false;
         if (!firstPass()) {
             secondPass();
         }
@@ -40,9 +50,11 @@ public class DescriptionTrimmer {
             switch (lower) {
                 case "atm":
                     group = m.getMessage("finance.groups.atm");
+                    canonical = true;
                     return true;
                 case "fee":
                     group = m.getMessage("finance.groups.fees");
+                    canonical = true;
                     return true;
                 case "gas":
                 case "exxon":
@@ -56,16 +68,19 @@ public class DescriptionTrimmer {
                 case "conoco":
                 case "chevron":
                     group = m.getMessage("finance.groups.gas");
+                    canonical = true;
                     return true;
                 case "uber":
                 case "lyft":
                 case "taxi":
                 case "cab":
                     group = m.getMessage("finance.groups.transportation");
+                    canonical = true;
                     return true;
                 case "rent":
                 case "resident":
                     group = m.getMessage("finance.groups.rent");
+                    canonical = true;
                     return true;
                 default:
                     break;
@@ -106,5 +121,9 @@ public class DescriptionTrimmer {
 
     public String getDescription() {
         return description;
+    }
+
+    public boolean isCanonical() {
+        return canonical;
     }
 }

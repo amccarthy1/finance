@@ -82,8 +82,7 @@ public class TransactionParser {
         AccountTransaction newTransaction = new AccountTransaction();
         newTransaction.setDate(date);
         newTransaction.setDescription(description);
-        DescriptionTrimmer dt = new DescriptionTrimmer(description);
-        newTransaction.setGroup(dt.getGroupCriteria());
+        newTransaction.setGroup(GroupFinder.getGroup(description));
         newTransaction.setAmount(amount);
 
         return newTransaction;
