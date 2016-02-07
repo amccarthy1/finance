@@ -19,6 +19,8 @@ public class Places {
     private static Places instance;
 
     private String apiKey;
+
+    // indicates if the API is available. Requires an API key and a connection.
     private boolean canQuery;
 
     private Map<String, String> descriptionToType;
@@ -43,6 +45,19 @@ public class Places {
         return instance;
     }
 
+    /**
+     * Use the Google Places API (if available) to determine the type of a
+     * place.
+     * <p>
+     *     This method will make a good attempt to handle cases where the API
+     *     is not available. In these cases, this method will return the given
+     *     string.
+     * </p>
+     * @param placeName
+     *      The name of the place to query using the Google Places API
+     * @return
+     *      The type of place found. (not null)
+     */
     public static String getTypeOf(String placeName) {
         Places p = getInstance();
         // cache because API has limits.
@@ -60,10 +75,15 @@ public class Places {
             PlacesSearchResponse response = req.await();
             PlacesSearchResult[] results = response.results;
             if (results.length > 0 && results[0].types.length > 0) {
-                return p.set(placeName, results[0].types[0]);
+                PlaceType type = PlaceType.reverse(results[0].types[0]);
+                return p.set(placeName, type.getMessage());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException ioe) {
+            // if the internet connection fails at any point, just turn off the API.
+            System.err.println(MessageService.getInstance().getMessage("finance.errors.noInternet"));
+            p.canQuery = false;
+        } catch (Exception e2) {
+            e2.printStackTrace();
         }
         return p.set(placeName, placeName);
     }

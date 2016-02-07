@@ -19,7 +19,7 @@ public class RuleChecker {
             new Rule((s, ts) -> equalsCode(s, "finance.groups.fees") && ts.size() > 0, "finance.tips.fees"),
             new Rule((s, ts) -> equalsCode(s, "finance.groups.transportation") && ts.perMonth() > 3000, "finance.tips.transportation"),
             new Rule((s, ts) -> equalsCode(s, "finance.groups.gas") && ts.perMonth() > 3000, "finance.tips.gas"),
-            new Rule((s, ts) -> equalsCode(s, "finance.groups.restaurants") && ts.perMonth() > 8000, "finance.tips.restaurants")
+            new Rule((s, ts) -> equalsCode(s, "finance.groups.restaurant") && ts.perMonth() > 8000, "finance.tips.restaurants")
     };
 
     private static boolean equalsCode(String s, String code) {
