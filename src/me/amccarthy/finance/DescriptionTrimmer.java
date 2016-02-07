@@ -1,5 +1,7 @@
 package me.amccarthy.finance;
 
+import me.amccarthy.finance.messages.MessageService;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class DescriptionTrimmer {
     }
 
     private boolean firstPass() {
+        MessageService m = MessageService.getInstance();
         // check for common groups, like rent, gas, ATMs, etc.
         // All of these will be grouped together, and doing this will save some execution time
         // TODO specify using a configuration file for cleaner code.
@@ -36,10 +39,10 @@ public class DescriptionTrimmer {
             String lower = word.toLowerCase().replaceAll("[^a-z]", " ").trim();
             switch (lower) {
                 case "atm":
-                    group = "ATM";
+                    group = m.getMessage("finance.groups.atm");
                     return true;
                 case "fee":
-                    group = "Fees";
+                    group = m.getMessage("finance.groups.fees");
                     return true;
                 case "gas":
                 case "exxon":
@@ -52,17 +55,17 @@ public class DescriptionTrimmer {
                 case "valero":
                 case "conoco":
                 case "chevron":
-                    group = "Gasoline";
+                    group = m.getMessage("finance.groups.gas");
                     return true;
                 case "uber":
                 case "lyft":
                 case "taxi":
                 case "cab":
-                    group = "Transportation";
+                    group = m.getMessage("finance.groups.transportation");
                     return true;
                 case "rent":
                 case "resident":
-                    group = "Rent";
+                    group = m.getMessage("finance.groups.rent");
                     return true;
                 default:
                     break;

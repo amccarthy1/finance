@@ -1,31 +1,30 @@
 package me.amccarthy.finance.rules;
 
-import me.amccarthy.finance.Transaction;
 import me.amccarthy.finance.TransactionSet;
+import me.amccarthy.finance.messages.MessageService;
 
-import java.util.Collection;
 import java.util.function.BiPredicate;
 
 /**
  * Package: me.amccarthy.finance.rules
  * File: Rule.java
  *
- * A rule and associated message for giving financial advice.
+ * A rule and associated messageCode for giving financial advice.
  * <p>
  *     The general flow is as follows. For each transaction group, check all
  *     relevant rules to see if they apply. If any rules apply, display the
- *     corresponding message to the user.
+ *     corresponding messageCode to the user.
  * </p>
  *
  * @author Adam McCarthy <amccarthy@mail.rit.edu>
  */
 public class Rule {
     private BiPredicate<String, TransactionSet> criteria;
-    private String message;
+    private String messageCode;
 
-    public Rule(BiPredicate<String, TransactionSet> criteria, String message) {
+    public Rule(BiPredicate<String, TransactionSet> criteria, String messageCode) {
         this.criteria = criteria;
-        this.message = message;
+        this.messageCode = messageCode;
     }
 
     /**
@@ -42,11 +41,11 @@ public class Rule {
     }
 
     /**
-     * Get the message associated with this rule
+     * Get the messageCode associated with this rule
      * @return
-     *      A string message to the user.
+     *      A string messageCode to the user.
      */
     public String getMessage() {
-        return this.message;
+        return MessageService.getInstance().getMessage(messageCode);
     }
 }

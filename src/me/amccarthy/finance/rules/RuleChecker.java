@@ -1,8 +1,8 @@
 package me.amccarthy.finance.rules;
 
-import me.amccarthy.finance.Transaction;
 import me.amccarthy.finance.TransactionSet;
 import me.amccarthy.finance.currency.CurrencyFormat;
+import me.amccarthy.finance.messages.MessageService;
 
 import java.util.Date;
 
@@ -16,24 +16,25 @@ import java.util.Date;
  */
 public class RuleChecker {
     public static Rule[] rules = {
-            new Rule((s, ts) -> s.equals("Fees") && ts.size() > 0,
-                    "Avoiding fees can be an easy way to save a little money." +
-                    " If you have a lot of late fees, try setting up" +
-                    " reminders to notify you of due dates."
-            ), new Rule((s, ts) -> s.equals("Transportation") && ts.perMonth() > 3000,
-                    "Instead of taking personal transportation services, try " +
-                    "to organize carpools, take public transportation, or " +
-                    "take fewer trips. In addition, be sure to avoid using " +
-                    "these services at busy times, as they often increase " +
-                    "prices during traffic surges."
-            )
+            new Rule((s, ts) -> equalsCode(s, "finance.groups.fees") && ts.size() > 0, "finance.tips.fees"),
+            new Rule((s, ts) -> equalsCode(s, "finance.groups.transportation") && ts.perMonth() > 3000, "finance.tips.transportation"),
+            new Rule((s, ts) -> equalsCode(s, "finance.groups.gas") && ts.perMonth() > 3000, "finance.tips.gas")
     };
+
+    private static boolean equalsCode(String s, String code) {
+        return s.equals(MessageService.getInstance().getMessage(code));
+    }
 
     public static void check(String group, TransactionSet ts) {
         for (Rule r : rules) {
             if (r.test(group, ts)) {
-                System.out.printf("You spent %s on %s. ", CurrencyFormat.format(ts.total()), group);
-                System.out.println(r.getMessage());
+                System.out.println(
+                    MessageService.getInstance().getMessage("finance.tip.prefix",
+                        CurrencyFormat.format(ts.total()),
+                        group,
+                        r.getMessage()
+                    )
+                );
             }
         }
     }

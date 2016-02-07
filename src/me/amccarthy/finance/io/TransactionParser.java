@@ -3,9 +3,11 @@ package me.amccarthy.finance.io;
 import me.amccarthy.finance.*;
 import me.amccarthy.finance.currency.CurrencyFormat;
 import me.amccarthy.finance.currency.CurrencyFormatException;
+import me.amccarthy.finance.messages.MessageService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import sun.plugin2.message.Message;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -68,8 +70,11 @@ public class TransactionParser {
             date = CSV_DATE_FORMAT.parse(dateString);
             amount = CurrencyFormat.parse(value);
         } catch (ParseException|CurrencyFormatException e) {
-            System.err.println("Failed to parse record: ");
-            System.err.println(dateString + "," + description + "," + value);
+            System.err.printf(
+                    MessageService.getInstance().getMessage("finance.errors.failedToParseTransaction"),
+                    dateString + "," + description + "," + value
+            );
+            System.err.println();
             System.err.println("Ignoring Record.");
             return null;
         }
