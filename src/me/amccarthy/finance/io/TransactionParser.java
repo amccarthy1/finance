@@ -93,9 +93,12 @@ public class TransactionParser {
      * @return
      *      A collection of Transaction objects parsed from the CSV file.
      */
+    // TODO I would really like to make this iterable rather than parsing all
+    // at once. Then I would be able to show progress more easily while parsing,
+    // rather than spitting out all the data once it's been processed.
     public Map<String, TransactionSet> parse() {
-        System.out.println("Parsing CSV File...");
-        Map<String, TransactionSet> map = new TreeMap<>(GroupSorter::compare);
+        System.out.println(MessageService.getInstance().getMessage("finance.parsingMsg"));
+        Map<String, TransactionSet> map = new TreeMap<>();
         for (CSVRecord record : parser) {
             Transaction transaction = parseRecord(record);
             if (transaction == null) {

@@ -72,11 +72,22 @@ public class Places {
         GeoApiContext ctx = new GeoApiContext().setApiKey(p.apiKey);
         TextSearchRequest req = PlacesApi.textSearchQuery(ctx, placeName);
         try {
+            // 10:30PM hack to stop google API from spamming stderr
+            PrintStream oldErr = System.err;
+            PrintStream dummyStream = new PrintStream(new OutputStream(){
+                public void write(int b) {
+                    //NO-OP
+                }
+            });
+            System.setErr(dummyStream);
             PlacesSearchResponse response = req.await();
             PlacesSearchResult[] results = response.results;
+            System.setErr(oldErr);
             if (results.length > 0 && results[0].types.length > 0) {
                 PlaceType type = PlaceType.reverse(results[0].types[0]);
                 return p.set(placeName, type.getMessage());
+            } else {
+                return p.set(placeName, PlaceType.UNKNOWN.getMessage());
             }
         } catch (IOException ioe) {
             // if the internet connection fails at any point, just turn off the API.

@@ -25,6 +25,15 @@ public class DescriptionTrimmer {
     private static final String ID_NUM_REDACT_PATTERN = "#?(x+|\\*+)\\d{4}";
     private static final String REDUNDANT_WORDS = "purchase";
     private static final String KEY_VALUE_PAIR = "[a-z]+:.+"; // very frequently redundant
+    private static final String[] SUBSCRIPTION_SERVICES = {
+            "netflix",
+            "pandora",
+            "spotify",
+            "hulu",
+            "twitch",
+            "lootcrate",
+            "crunchyroll",
+    };
     private String description;
     private String group;
     private boolean canonical;
@@ -33,8 +42,8 @@ public class DescriptionTrimmer {
     public DescriptionTrimmer(String description) {
         this.description = description;
         this.canonical = false;
-        if (!firstPass()) {
-            secondPass();
+        if (!firstPass() && !searchForSubscriptions()) {
+            thirdPass();
         }
 
     }
@@ -82,6 +91,13 @@ public class DescriptionTrimmer {
                     group = m.getMessage("finance.groups.rent");
                     canonical = true;
                     return true;
+                case "online":
+                case "amazon":
+                case "etsy":
+                case "ebay":
+                    group = m.getMessage("finance.groups.online");
+                    canonical = true;
+                    return true;
                 default:
                     break;
             }
@@ -89,7 +105,21 @@ public class DescriptionTrimmer {
         return false;
     }
 
-    private void secondPass() {
+
+    private boolean searchForSubscriptions() {
+        MessageService m = MessageService.getInstance();
+        String lc = description.toLowerCase();
+        for (String s : SUBSCRIPTION_SERVICES) {
+            if (lc.contains(s)) {
+                group = m.getMessage("finance.groups.subscription");
+                canonical = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void thirdPass() {
         List<String> usefulBits = new ArrayList<>();
 
         boolean usefulEnded = false;

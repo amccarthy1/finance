@@ -1,8 +1,10 @@
 package me.amccarthy.finance.rules;
 
+import me.amccarthy.finance.Transaction;
 import me.amccarthy.finance.TransactionSet;
 import me.amccarthy.finance.currency.CurrencyFormat;
 import me.amccarthy.finance.messages.MessageService;
+import sun.plugin2.message.Message;
 
 import java.util.Date;
 
@@ -17,10 +19,23 @@ import java.util.Date;
 public class RuleChecker {
     public static Rule[] rules = {
             new Rule((s, ts) -> equalsCode(s, "finance.groups.fees") && ts.size() > 0, "finance.tips.fees"),
-            new Rule((s, ts) -> equalsCode(s, "finance.groups.transportation") && ts.perMonth() > 3000, "finance.tips.transportation"),
-            new Rule((s, ts) -> equalsCode(s, "finance.groups.gas") && ts.perMonth() > 3000, "finance.tips.gas"),
-            new Rule((s, ts) -> equalsCode(s, "finance.groups.restaurant") && ts.perMonth() > 8000, "finance.tips.restaurants")
+            new MonthlyRule(getMsg("finance.groups.transportation"), 3000, "finance.tips.transportation"),
+            new MonthlyRule(getMsg("finance.groups.gas"), 3000, "finance.tips.gas"),
+            new MonthlyRule(getMsg("finance.groups.restaurant"), 8000, "finance.tips.restaurants"),
+            new MonthlyRule(getMsg("finance.groups.restaurant"), 1000, "finance.tips.retailMeNot"),
+            new Rule((s, ts) -> equalsCode(s, "finance.groups.locksmith") && ts.size() > 0, "finance.tips.locksmith"),
+            new MonthlyRule(getMsg("finance.groups.subscription"), 400, "finance.tips.subscription"),
+            new MonthlyRule(getMsg("finance.groups.departmentStore"), 3000, "finance.tips.departmentStores"),
+            new Rule(
+                (groupName, transactionSet) -> transactionSet.stream()
+                        .anyMatch((t -> t.getDescription().toLowerCase().contains("walmart"))),
+                "finance.tips.walmart"
+            )
     };
+
+    private static String getMsg(String code) {
+        return MessageService.getInstance().getMessage(code);
+    }
 
     private static boolean equalsCode(String s, String code) {
         return s.equals(MessageService.getInstance().getMessage(code));
