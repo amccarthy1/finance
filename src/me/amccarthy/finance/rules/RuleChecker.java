@@ -26,6 +26,7 @@ public class RuleChecker {
             new Rule((s, ts) -> equalsCode(s, "finance.groups.locksmith") && ts.size() > 0, "finance.tips.locksmith"),
             new MonthlyRule(getMsg("finance.groups.subscription"), 400, "finance.tips.subscription"),
             new MonthlyRule(getMsg("finance.groups.departmentStore"), 3000, "finance.tips.departmentStores"),
+            new TotalRule(getMsg("finance.groups.gambling"), 0, "finance.tips.gambling"),
             new Rule(
                 (groupName, transactionSet) -> transactionSet.stream()
                         .anyMatch((t -> t.getDescription().toLowerCase().contains("walmart"))),
